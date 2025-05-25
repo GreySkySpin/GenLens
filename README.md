@@ -147,7 +147,7 @@ Name-based inference of identity is inherently approximate and potentially inacc
 [ ] Add automatic update script using ISO 8601 timestamps
 
 
-###Licence
+### Licence
 
 This project is released under the MIT Licence. Data is used solely for critical analysis and educational purposes.
 
