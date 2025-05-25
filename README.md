@@ -1,28 +1,29 @@
-# GenLens
+# Demographic Visualisation of AI Research
 
-## Demographic Visualisation of AI Research
+## Overview
 
-### Overview
+This project critically examines the demographic landscape of researchers in **Artificial Intelligence (AI)** by analysing author metadata from open-access repositories such as **arXiv** and **Zenodo**. It uses inferred name data to group authors by likely gender and cultural name origin, connecting them to research topics via keywords. The resulting dataset is visualised with D3.js to explore patterns of visibility, dominance, and underrepresentation.
 
-This project aims to critically examine the demographic landscape of researchers in Artificial Intelligence (AI) by analysing author metadata from open-access repositories like arXiv and Zenodo. It uses inferred name data to group authors by likely gender and cultural name origin, connecting them to research topics via keywords. The results are visualised with D3.js to highlight visibility, disparities, and underrepresentation.
+## Motivation
 
-### Goals
+The research space is disproportionately dominated by names familiar to Western and especially Anglo-European audiences. This bias is not only structural but also psychological—researchers with names that are more recognisable and pronounceable to Western readers are more easily cited, remembered, or included in networks. While names of East Asian origin, especially Chinese and Japanese, are increasingly present, their visibility is often contingent on assimilation into Western academic norms.
 
-Extract paper metadata including titles, authors, keywords, and publication dates.
+This project aims to reveal and challenge such biases, amplify underrepresented voices, and create a platform that allows for more inclusive discovery of work in AI. It intentionally avoids sorting or listing dominant categories first in the interface or database, reflecting a deliberate rejection of inherited hierarchies.
 
-Infer gender and cultural origin from names using public APIs.
+## Goals
 
-Allow manual correction of author data (e.g. for trans, non-binary, or intersex individuals).
+- Extract paper metadata including titles, authors, keywords, and publication dates.
+- Use APIs to infer gender and cultural origin based on names.
+- Allow manual correction of author data, to accommodate trans, non-binary, intersex, and other identities.
+- Visualise connections between demographics and research topics using an interactive network.
+- Offer filters to promote researchers from marginalised and underrepresented name groups.
+- Maintain ethical transparency about the limits and assumptions of inference.
 
-Visualise data as a network or cluster chart to explore intersections of demographic and topic.
+## Data Schema
 
-Encourage reflection on structural biases in academic visibility and publication.
+Each paper record follows this structure:
 
-
-### Data Schema
-
-Each paper record includes:
-
+```json
 {
   "title": "Sample Paper Title",
   "authors": [
@@ -43,111 +44,92 @@ Each paper record includes:
   "url": "https://zenodo.org/record/xxxx",
   "last_updated": "2025-05-25T14:23:00Z"
 }
+```
 
-APIs and Tools
+## APIs and Tools
 
-APIs
+### Metadata Sources
 
-Zenodo API
+- [Zenodo API](https://developers.zenodo.org/)
+- [arXiv API](https://arxiv.org/help/api/)
 
-arXiv API
+### Demographic Inference APIs
 
-genderize.io — Predicts gender from first name
-
-NamSor — Predicts gender and cultural name origin
-
+- [genderize.io](https://genderize.io/) — Predicts likely gender based on first names.
+- [NamSor API](https://www.namsor.com/) — Predicts both gender and cultural name origin.
 
 ### Python Libraries
 
-requests — API querying
+- `requests` — HTTP requests for APIs
+- `pandas` — Data processing
+- `python-dateutil` — Parsing and comparing timestamps
 
-pandas — data handling
+Install with:
 
-python-dateutil — date parsing and formatting
-
-
+```bash
 pip install requests pandas python-dateutil
+```
 
-JavaScript Libraries
+## Sample Code (Zenodo Extraction)
 
-D3.js — Data-driven visualisation
-
-
-### Sample Code (Zenodo Extraction)
-
+```python
 import requests
 from datetime import datetime
 
-#### Load last update timestamp
+# Load last update timestamp
 with open("last_updated.txt", "r") as f:
     last_updated = f.read().strip()
 
-#### Query Zenodo for new records
+# Query Zenodo for new records
 url = f"https://zenodo.org/api/records/?q=artificial+intelligence&sort=mostrecent&size=100&updated:>{last_updated}"
 response = requests.get(url)
 data = response.json()
 
-#### Update timestamp
+# Update timestamp
 now = datetime.utcnow().isoformat() + "Z"
 with open("last_updated.txt", "w") as f:
     f.write(now)
 
-#### Process records
+# Process records
 for record in data['hits']['hits']:
     title = record['metadata']['title']
     authors = [creator['name'] for creator in record['metadata'].get('creators', [])]
     print(title, authors)
+```
 
-### Visualisation Approach
+## Visualisation Approach
 
-Bubble or network chart using D3.js
+- **Bubble or network chart** using D3.js
+- Nodes represent research topics or keywords
+- Demographic breakdown shown via colour or pie segments
+- Avoid stereotypical colours (e.g., no pink/blue for gender)
+- Filters by demographic group, keyword, publication date
+- Tooltips include author list and links to original papers
 
-Nodes = keywords/topics
+## Manual Data Correction
 
-Demographic breakdown = node colour or pie segments
+Use a CSV or lightweight database with these fields:
 
-Avoid stereotypical colours (e.g. no pink/blue for gender)
+- `full_name`
+- `corrected_gender`
+- `corrected_origin`
+- `notes`
 
-Add filters by demographic, keyword, publication date
+Corrections are merged with inferred data and flagged for clarity.
 
-Tooltip with list of authors and links to original paper
+## Ethical Considerations
 
+Name-based inference is probabilistic, approximate, and cannot capture the full spectrum of lived identity. This project does not aim to categorise individuals but to expose systemic imbalances in recognition and representation. Manual correction is supported. Unknown or uncertain values should always be marked clearly, never assumed.
 
-### Manual Data Correction
+## Next Steps
 
-A CSV or database can support manual overrides, with fields:
+- Finalise core keywords for AI paper search
+- Build data extraction script for Zenodo
+- Integrate with gender and origin APIs
+- Add manual override system
+- Begin initial D3.js visualisations
+- Add script for timestamp-aware incremental updates
 
-full_name
-
-corrected_gender
-
-corrected_origin
-
-notes
-
-
-This is merged with inferred data and clearly marked.
-
-### Ethical Note
-
-Name-based inference of identity is inherently approximate and potentially inaccurate. This project is not about classification but about making visible the overrepresentation of dominant groups and questioning who gets visibility in AI research. Manual correction is supported, and uncertain results should always be marked as such.
-
-### Next Steps
-
-[ ] Define the AI-related keywords to search for
-
-[ ] Build data extraction for Zenodo (start with static dataset)
-
-[ ] Connect to NamSor or genderize APIs
-
-[ ] Design correction interface (CSV or Airtable)
-
-[ ] Build D3.js visualisation
-
-[ ] Add automatic update script using ISO 8601 timestamps
-
-
-### Licence
+## Licence
 
 This project is released under the MIT Licence. Data is used solely for critical analysis and educational purposes.
-
