@@ -1,6 +1,6 @@
 # GenLens
 
-#### Demographic Visualisation of AI Research
+## Demographic Visualisation of AI Research
 
 ### Overview
 
@@ -78,21 +78,21 @@ D3.js — Data-driven visualisation
 import requests
 from datetime import datetime
 
-# Load last update timestamp
+#### Load last update timestamp
 with open("last_updated.txt", "r") as f:
     last_updated = f.read().strip()
 
-# Query Zenodo for new records
+#### Query Zenodo for new records
 url = f"https://zenodo.org/api/records/?q=artificial+intelligence&sort=mostrecent&size=100&updated:>{last_updated}"
 response = requests.get(url)
 data = response.json()
 
-# Update timestamp
+#### Update timestamp
 now = datetime.utcnow().isoformat() + "Z"
 with open("last_updated.txt", "w") as f:
     f.write(now)
 
-# Process records
+#### Process records
 for record in data['hits']['hits']:
     title = record['metadata']['title']
     authors = [creator['name'] for creator in record['metadata'].get('creators', [])]
@@ -132,7 +132,7 @@ This is merged with inferred data and clearly marked.
 
 Name-based inference of identity is inherently approximate and potentially inaccurate. This project is not about classification but about making visible the overrepresentation of dominant groups and questioning who gets visibility in AI research. Manual correction is supported, and uncertain results should always be marked as such.
 
-###Next Steps
+### Next Steps
 
 [ ] Define the AI-related keywords to search for
 
